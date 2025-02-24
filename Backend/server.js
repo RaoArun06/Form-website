@@ -31,6 +31,27 @@ app.get("/", (req, res) => {
   res.send("Hello, This is a simple API for user registration and retrieval.");
 });
 
+app.post("/api/fetch-user", async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ error: "Email is required" });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    console.log("User found:", user); 
+    res.json(user); 
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    res.status(500).json({ error: "Server error while fetching user" });
+  }
+});
+
+
 app.post("/api/save-user", upload.fields([{ name: "image" }, { name: "pdf" }]), async (req, res) => {
   try {
     const { name, email, age } = req.body;

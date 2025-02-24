@@ -40,32 +40,33 @@ export default function FormComponent() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex flex-col items-center p-4 bg-gray-100">
+      <h2 className="text-lg font-bold mb-4">Fill the details</h2>
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="bg-white p-6 rounded-lg shadow-md w-96 space-y-4"
       >
         <div>
           <label className="block text-sm font-medium">Name</label>
-          <input {...register("name", { required: "Name is required" })} className="border p-2 w-full rounded-md" />
+          <input {...register("name", { required: "Name is required" })} placeholder="Enter your name" className="border p-2 w-full rounded-md" />
           {errors.name && <p className="text-red-500 text-xs">{errors.name.message}</p>}
         </div>
 
         <div>
           <label className="block text-sm font-medium">Email</label>
-          <input {...register("email", { required: "Email is required" })} className="border p-2 w-full rounded-md" />
+          <input {...register("email", { required: "Email is required" })} placeholder="Enter your email" className="border p-2 w-full rounded-md" />
           {errors.email && <p className="text-red-500 text-xs">{errors.email.message}</p>}
         </div>
 
         <div>
           <label className="block text-sm font-medium">Age</label>
-          <input type="number" {...register("age", { required: "Age is required" })} className="border p-2 w-full rounded-md" />
+          <input type="number" {...register("age", { required: "Age must be numeric" })} placeholder="Enter your age" className="border p-2 w-full rounded-md" />
           {errors.age && <p className="text-red-500 text-xs">{errors.age.message}</p>}
         </div>
 
         <div>
           <label className="block text-sm font-medium">Upload PDF</label>
-          <input type="file" accept=".pdf" {...register("pdf")} className="border p-2 w-full rounded-md" onChange={(e) => setPdfName(e.target.files[0]?.name || "")} />
+          <input type="file" accept=".pdf" {...register("pdf")}  className="border p-2 w-full rounded-md text-gray-600" onChange={(e) => setPdfName(e.target.files[0]?.name || "")} />
           {pdfName && <p className="text-gray-500 text-xs mt-1">{pdfName}</p>}
         </div>
 
@@ -75,7 +76,7 @@ export default function FormComponent() {
             type="file"
             accept="image/*"
             {...register("image")}
-            className="border p-2 w-full rounded-md"
+            className="border p-2 w-full rounded-md text-gray-600"
             onChange={(e) => {
               const file = e.target.files[0];
               if (file) {

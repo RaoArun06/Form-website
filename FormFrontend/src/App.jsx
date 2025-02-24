@@ -1,16 +1,24 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import React from "react";
 import "./App.css";
 import FormComponent from "./FormComponent";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Layout from "./Layout";
+import EditResponse from "./EditResponse";
 
-function App() {
 
-
+const App = () => {
   return (
-    <>
-      <FormComponent />
-    </>
+    <Router>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<FormComponent />} />
+          <Route path="/edit" element={<EditResponse />} />
+        </Routes>
+      </Layout>
+    </Router>
   );
-}
+};
 
 export default App;
+
+
