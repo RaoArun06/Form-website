@@ -51,6 +51,31 @@ app.post("/api/fetch-user", async (req, res) => {
   }
 });
 
+app.put("/api/update-user", upload.fields([{ name: "image" }, { name: "pdf" }]), async (req, res) => {
+  try {
+    const { name, email, age } = req.body;
+    if (!email) return res.status(400).json({ error: "Email is required" });
+
+    const updatedFields = { name, age };
+
+    if (req.files["image"]) {
+      updatedFields.imagePath = `/uploads/${req.files["image"][0].filename}`;
+    }
+
+    if (req.files["pdf"]) {
+      updatedFields.pdfPath = `/uploads/${req.files["pdf"][0].filename}`;
+    }
+
+    const user = await User.findOneAndUpdate({ email }, updatedFields, { new: true });
+
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    res.json({ message: "User updated successfully", user });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).json({ error: "Server error while updating user" });
+  }
+});
 
 app.post("/api/save-user", upload.fields([{ name: "image" }, { name: "pdf" }]), async (req, res) => {
   try {
@@ -58,7 +83,10 @@ app.post("/api/save-user", upload.fields([{ name: "image" }, { name: "pdf" }]), 
     const imagePath = req.files["image"] ? `/uploads/${req.files["image"][0].filename}` : null;
     const pdfPath = req.files["pdf"] ? `/uploads/${req.files["pdf"][0].filename}` : null;
 
-    const newUser = new User({ name, email, age, imagePath, pdfPath });
+    const numericAge = Number(age);
+
+    const newUser = new User({ name, email, age: numericAge, imagePath, pdfPath });
+
     await newUser.save();
     res.status(201).json({ message: "User saved successfully!" });
   } catch (error) {

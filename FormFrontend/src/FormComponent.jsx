@@ -19,7 +19,7 @@ export default function FormComponent() {
       const formData = new FormData();
       formData.append("name", data.name);
       formData.append("email", data.email);
-      formData.append("age", data.age);
+      formData.append("age", Number(data.age));
       formData.append("image", data.image[0]); 
       formData.append("pdf", data.pdf[0]); 
 
