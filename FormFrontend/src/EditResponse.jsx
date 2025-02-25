@@ -1,26 +1,27 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 
 const EditResponse = () => {
-  const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm();
+  const { register, handleSubmit, reset, formState: { errors } } = useForm();
   const [userData, setUserData] = useState(null);
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState(""); 
   const [imagePreview, setImagePreview] = useState(null);
   const [pdfPath, setPdfPath] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
 
   const fetchUserData = async () => {
     setLoading(true);
     setError("");
 
     try {
-      const response = await axios.post("http://localhost:5000/api/fetch-user", { email });
+      const response = await axios.post("http://localhost:5000/api/fetch-user", { email, password }); 
+
       if (response.data) {
         setUserData(response.data);
-        reset(response.data); 
+        reset(response.data);
 
         if (response.data.imagePath) {
           setImagePreview(`http://localhost:5000${response.data.imagePath}`);
@@ -30,18 +31,19 @@ const EditResponse = () => {
         }
       }
     } catch (err) {
-      setError(err.response?.data?.error || "User not found");
+      setError(err.response?.data?.error || "Invalid email or password");
     } finally {
       setLoading(false);
     }
   };
 
+ 
   const onSubmit = async (data) => {
     try {
       const formData = new FormData();
       formData.append("name", data.name);
       formData.append("age", data.age);
-      formData.append("email", email); 
+      formData.append("email", email);
       if (data.image[0]) formData.append("image", data.image[0]);
       if (data.pdf[0]) formData.append("pdf", data.pdf[0]);
 
@@ -49,20 +51,19 @@ const EditResponse = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      console.log("Update Success:", response.data);
       alert("User updated successfully!");
-      setUserData(null); 
-      setEmail(""); 
-      reset(); 
+      setUserData(null);
+      setEmail("");
+      setPassword("");
+      reset();
     } catch (err) {
-      console.error("Update Error:", err.response?.data || "Error updating user");
       alert("Failed to update user.");
     }
   };
 
   return (
-    <div className="p-4">
-      <h2 className="text-lg font-bold mb-4">Fetch & Edit User Data</h2>
+    <div className="p-4 flex flex-col items-center h-screen">
+      <h2 className="text-lg font-bold mb-4">Fetch & Edit Your Data</h2>
 
       <div className="mb-4">
         <input
@@ -70,6 +71,13 @@ const EditResponse = () => {
           placeholder="Enter email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          className="border p-2 rounded w-full mb-2"
+        />
+        <input
+          type="password"
+          placeholder="Enter password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           className="border p-2 rounded w-full mb-2"
         />
         <button onClick={fetchUserData} className="bg-blue-500 text-white p-2 rounded w-full" disabled={loading}>

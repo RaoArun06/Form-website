@@ -13,12 +13,15 @@ export default function FormComponent() {
 
   const [imagePreview, setImagePreview] = useState(null);
   const [pdfName, setPdfName] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const onSubmit = async (data) => {
+    setLoading(true);
     try {
       const formData = new FormData();
       formData.append("name", data.name);
       formData.append("email", data.email);
+      formData.append("password", data.password); 
       formData.append("age", Number(data.age));
       formData.append("image", data.image[0]); 
       formData.append("pdf", data.pdf[0]); 
@@ -36,6 +39,9 @@ export default function FormComponent() {
     } catch (error) {
       console.error("Error saving user:", error);
       alert("Failed to save user");
+    }
+    finally {
+      setLoading(false);
     }
   };
 
@@ -59,6 +65,12 @@ export default function FormComponent() {
         </div>
 
         <div>
+          <label className="block text-sm font-medium">Password</label>
+          <input type="password" {...register("password", { required: "Password is required" })} placeholder="Enter your password" className="border p-2 w-full rounded-md" />
+          {errors.password && <p className="text-red-500 text-xs">{errors.password.message}</p>}
+        </div>
+
+        <div>
           <label className="block text-sm font-medium">Age</label>
           <input type="number" {...register("age", { required: "Age must be numeric" })} placeholder="Enter your age" className="border p-2 w-full rounded-md" />
           {errors.age && <p className="text-red-500 text-xs">{errors.age.message}</p>}
@@ -66,7 +78,7 @@ export default function FormComponent() {
 
         <div>
           <label className="block text-sm font-medium">Upload PDF</label>
-          <input type="file" accept=".pdf" {...register("pdf")}  className="border p-2 w-full rounded-md text-gray-600" onChange={(e) => setPdfName(e.target.files[0]?.name || "")} />
+          <input type="file" accept=".pdf" {...register("pdf")} className="border p-2 w-full rounded-md text-gray-600" onChange={(e) => setPdfName(e.target.files[0]?.name || "")} />
           {pdfName && <p className="text-gray-500 text-xs mt-1">{pdfName}</p>}
         </div>
 
@@ -87,8 +99,8 @@ export default function FormComponent() {
           {imagePreview && <img src={imagePreview} alt="Preview" className="mt-2 w-20 h-20 object-cover rounded-md" />}
         </div>
 
-        <button type="submit" className="bg-blue-500 text-white py-2 rounded-md w-full hover:bg-blue-600">
-          Submit
+        <button type="submit" className="bg-blue-500 text-white py-2 rounded-md w-full hover:bg-blue-600" disabled={loading}>
+          {loading ? "Subminting..." : "Submit"}
         </button>
       </form>
     </div>
